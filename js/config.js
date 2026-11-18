@@ -4,27 +4,29 @@
 // These values are meant to be public. Security comes from firestore.rules.
 // While apiKey is empty the app runs in demo mode and saves data only in this browser.
 export const firebaseConfig = {
-  apiKey: '',
-  authDomain: '',
-  projectId: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  appId: '',
+  apiKey: "AIzaSyBJFbvp0v4XzTXEXZZF_bqLbJZa6bgGyvs",
+  authDomain: "zionbus-a56e3.firebaseapp.com",
+  projectId: "zionbus-a56e3",
+  storageBucket: "zionbus-a56e3.firebasestorage.app",
+  messagingSenderId: "87430251699",
+  appId: "1:87430251699:web:3bb8d5af825ebd1701dcc6",
+  measurementId: "G-LXT98DNXXG",
 };
 
 export const DEMO_MODE = !firebaseConfig.apiKey;
 
 // Only accounts from this Google Workspace domain can sign in.
-export const SCHOOL_DOMAIN = 'zispp.org';
+export const SCHOOL_DOMAIN = "zispp.org";
 
 // Which trip to show. Share a link like ?trip=museum-oct to use a different trip.
-export const TRIP_ID = new URLSearchParams(location.search).get('trip') || 'field-trip';
+export const TRIP_ID =
+  new URLSearchParams(location.search).get("trip") || "field-trip";
 
 // Starting values for a new trip. The bus layout is a placeholder (10 rows × 4 = 40 seats)
 // and can be changed later in Teacher tools → Trip settings.
 export const DEFAULT_TRIP = {
-  name: 'Field Trip',
-  date: '',
+  name: "Field Trip",
+  date: "",
   rows: 10,
   seatsPerRow: 4,
   isOpen: true,
