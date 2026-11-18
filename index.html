@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ZionBus — Pick Your Seat</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="demo-banner" class="demo-banner" hidden>
+    <span><strong>Demo mode:</strong> data is saved only in this browser. Open a second tab to see seats update live.</span>
+    <button id="reset-demo" class="link-button" type="button">Reset demo</button>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">ZionBus</div>
+    <div id="user-box" class="user-box" hidden>
+      <span id="user-email"></span>
+      <button id="sign-out" class="link-button" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="login" class="card login" hidden>
+      <h1>Pick your bus seat</h1>
+      <p>Sign in with your school account to choose your seat for the field trip.</p>
+
+      <form id="demo-login" class="demo-login" hidden>
+        <label for="demo-email">School email</label>
+        <input id="demo-email" type="email" placeholder="first.last@zispp.org" required autocomplete="email">
+        <button class="primary" type="submit">Sign in</button>
+        <p class="hint">Demo: type any <code>@zispp.org</code> email. Use <code>teacher@zispp.org</code> to see the teacher view.</p>
+      </form>
+
+      <button id="google-login" class="primary" type="button" hidden>Sign in with Google</button>
+      <p id="login-error" class="error" role="alert"></p>
+    </section>
+
+    <section id="app" hidden>
+      <div class="trip-header">
+        <h1 id="trip-title"></h1>
+        <p id="trip-date" class="muted"></p>
+        <p id="trip-status" class="status"></p>
+      </div>
+
+      <ul class="legend">
+        <li><span class="swatch available"></span>Available</li>
+        <li><span class="swatch taken"></span>Taken</li>
+        <li><span class="swatch mine"></span>Your seat</li>
+        <li><span class="swatch selected"></span>Selected</li>
+      </ul>
+
+      <div class="bus">
+        <div class="bus-front">
+          <span class="driver">Driver</span>
+          <span class="door">Door</span>
+        </div>
+        <div id="seat-map" class="seat-map"></div>
+        <div class="bus-back">Back of bus</div>
+      </div>
+
+      <section id="admin" class="card admin" hidden>
+        <h2>Teacher tools</h2>
+        <p id="seat-count" class="muted"></p>
+        <div class="admin-actions">
+          <button id="toggle-open" type="button"></button>
+          <button id="export-csv" type="button">Download seating chart (CSV)</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Seat</th><th>Student</th><th class="email-col">Email</th><th></th></tr></thead>
+            <tbody id="roster"></tbody>
+          </table>
+        </div>
+
+        <details id="trip-settings">
+          <summary>Trip settings</summary>
+          <form id="trip-form" class="trip-form">
+            <label>Trip name <input name="name" required></label>
+            <label>Date <input name="date" type="date"></label>
+            <label>Rows <input name="rows" type="number" min="1" max="20" required></label>
+            <label>Seats per row <input name="seatsPerRow" type="number" min="2" max="6" required></label>
+            <button class="primary" type="submit">Save trip</button>
+          </form>
+        </details>
+      </section>
+    </section>
+  </main>
+
+  <div id="action-bar" class="action-bar" hidden>
+    <span id="action-text"></span>
+    <div class="action-buttons" id="action-buttons"></div>
+  </div>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

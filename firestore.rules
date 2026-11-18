@@ -1,0 +1,77 @@
+rules_version = '2';
+
+// Paste these into Firebase console → Firestore Database → Rules, then Publish.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function myEmail() {
+      return request.auth.token.email.lower();
+    }
+
+    function isSchoolUser() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && myEmail().matches('.*@zispp[.]org');
+    }
+
+    function isAdmin() {
+      return isSchoolUser()
+        && exists(/databases/$(database)/documents/admins/$(myEmail()));
+    }
+
+    function tripIsOpen(tripId) {
+      return get(/databases/$(database)/documents/trips/$(tripId)).data.isOpen == true;
+    }
+
+    function studentPath(tripId) {
+      return /databases/$(database)/documents/trips/$(tripId)/students/$(myEmail());
+    }
+
+    function seatPath(tripId, seatId) {
+      return /databases/$(database)/documents/trips/$(tripId)/seats/$(seatId);
+    }
+
+    // Teachers are added by hand in the Firebase console: admins/{email}.
+    match /admins/{email} {
+      allow get: if isSchoolUser() && email == myEmail();
+    }
+
+    match /trips/{tripId} {
+      allow read: if isSchoolUser();
+      allow write: if isAdmin();
+
+      // One doc per taken seat. "create" fails if the seat already exists,
+      // so a student can never overwrite someone else's seat.
+      match /seats/{seatId} {
+        allow read: if isSchoolUser();
+        allow update: if isAdmin();
+        allow create: if isAdmin() || (
+          isSchoolUser()
+          && tripIsOpen(tripId)
+          && request.resource.data.studentEmail == myEmail()
+          // The student's record must point at this seat after the write...
+          && getAfter(studentPath(tripId)).data.seatId == seatId
+          // ...and their previous seat (if any) must be freed in the same write.
+          && (!exists(studentPath(tripId))
+              || !existsAfter(seatPath(tripId, get(studentPath(tripId)).data.seatId)))
+        );
+        allow delete: if isAdmin() || (
+          isSchoolUser()
+          && tripIsOpen(tripId)
+          && resource.data.studentEmail == myEmail()
+        );
+      }
+
+      // students/{email} = { seatId }. Guarantees one seat per student.
+      match /students/{email} {
+        allow read: if isSchoolUser();
+        allow write: if isAdmin();
+        allow create, update: if isSchoolUser()
+          && tripIsOpen(tripId)
+          && email == myEmail()
+          && getAfter(seatPath(tripId, request.resource.data.seatId)).data.studentEmail == myEmail();
+        allow delete: if isSchoolUser() && tripIsOpen(tripId) && email == myEmail();
+      }
+    }
+  }
+}
