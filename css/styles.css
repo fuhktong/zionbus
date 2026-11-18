@@ -115,7 +115,7 @@ input {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
-.brand { font-weight: 800; font-size: 1.2rem; }
+.brand { font-weight: 800; font-size: 1.2rem; color: inherit; text-decoration: none; }
 .brand::before { content: "🚌 "; }
 .user-box { font-size: 0.9rem; color: var(--muted); overflow-wrap: anywhere; text-align: right; }
 
@@ -229,17 +229,95 @@ input {
 /* ---- Teacher tools ---- */
 
 .admin { margin-top: 8px; }
+.admin h2 + .muted { margin-top: 0; }
 .admin-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .table-wrap { overflow-x: auto; margin-bottom: 16px; }
 table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border); }
 th { color: var(--muted); font-weight: 600; }
 
+details { border-top: 1px solid var(--border); padding-top: 8px; }
 details summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
-.trip-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
-.trip-form label { display: grid; gap: 4px; font-size: 0.9rem; }
-.trip-form label:first-child { grid-column: 1 / -1; }
-.trip-form button { grid-column: 1 / -1; }
+details[open] summary { margin-bottom: 12px; }
+
+.stack > * + * { margin-top: 12px; }
+.stack > h2 + * { margin-top: 4px; }
+
+.grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid-form label { display: grid; gap: 4px; font-size: 0.9rem; }
+.grid-form .wide, .grid-form > button { grid-column: 1 / -1; }
+
+.bus-list { display: grid; gap: 12px; margin-bottom: 12px; }
+.bus-form { padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); }
+.bus-form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.bus-form-actions .muted { flex: 1; font-size: 0.85rem; }
+
+.danger-button { color: var(--danger); border-color: var(--danger); background: var(--surface); }
+#delete-trip { margin-top: 16px; }
+
+/* ---- Home ---- */
+
+#home > h1 { margin-bottom: 12px; }
+#home > .card { margin-top: 24px; }
+.past-heading { margin-top: 24px; color: var(--muted); }
+
+.trip-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.trip-list .empty { padding: 12px 0; }
+.trip-list.past .trip-card { opacity: 0.75; }
+.trip-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: inherit;
+  text-decoration: none;
+}
+.trip-card:hover { border-color: var(--primary); }
+.trip-card-text { display: grid; min-width: 0; }
+.trip-name { font-weight: 600; overflow-wrap: anywhere; }
+.trip-card .muted { font-size: 0.9rem; }
+
+.badge {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--taken);
+  color: var(--muted);
+}
+.badge.open { background: color-mix(in srgb, var(--open) 18%, transparent); color: var(--open); }
+.badge.closed { background: color-mix(in srgb, var(--closed) 14%, transparent); color: var(--closed); }
+
+.teacher-list { list-style: none; padding: 0; margin: 0; }
+.teacher-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.teacher-email { overflow-wrap: anywhere; }
+.inline-form { display: flex; gap: 8px; }
+.inline-form input { flex: 1; min-width: 0; }
+
+/* ---- Trip view ---- */
+
+.back-link { display: inline-block; margin-bottom: 8px; color: var(--primary); text-decoration: none; }
+.back-link:hover { text-decoration: underline; }
+
+.bus-tabs { display: flex; gap: 8px; overflow-x: auto; margin: 0 auto 16px; max-width: 340px; padding-bottom: 2px; }
+.bus-tab { flex: 1 0 auto; display: grid; gap: 0; padding: 8px 14px; text-align: center; }
+.bus-tab.active { border-color: var(--primary); border-width: 2px; padding: 7px 13px; }
+.bus-tab-name { font-weight: 600; }
+.bus-tab-count { font-size: 0.8rem; color: var(--muted); }
+.bus-label { align-self: center; font-weight: 700; color: var(--text); }
+.seat-map .empty { text-align: center; max-width: 240px; margin: 12px auto; }
 
 @media (max-width: 380px) {
   .bus { padding: 12px 8px; }

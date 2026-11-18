@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ZionBus — Pick Your Seat</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚌</text></svg>">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -13,7 +14,7 @@
   </div>
 
   <header class="topbar">
-    <div class="brand">ZionBus</div>
+    <a class="brand" id="home-link" href="./">ZionBus</a>
     <div id="user-box" class="user-box" hidden>
       <span id="user-email"></span>
       <button id="sign-out" class="link-button" type="button">Sign out</button>
@@ -23,43 +24,81 @@
   <main>
     <section id="login" class="card login" hidden>
       <h1>Pick your bus seat</h1>
-      <p>Sign in with your school account to choose your seat for the field trip.</p>
+      <p>Sign in with your school account to choose your seat for a field trip.</p>
 
       <form id="demo-login" class="demo-login" hidden>
         <label for="demo-email">School email</label>
         <input id="demo-email" type="email" placeholder="first.last@zispp.org" required autocomplete="email">
         <button class="primary" type="submit">Sign in</button>
-        <p class="hint">Demo: type any <code>@zispp.org</code> email. Use <code>teacher@zispp.org</code> to see the teacher view.</p>
+        <p class="hint">Demo: type any <code>@zispp.org</code> email. <code>teacher@zispp.org</code> is the
+          master admin and <code>ms.lee@zispp.org</code> is a teacher.</p>
       </form>
 
       <button id="google-login" class="primary" type="button" hidden>Sign in with Google</button>
       <p id="login-error" class="error" role="alert"></p>
     </section>
 
-    <section id="app" hidden>
+    <!-- Home: list of trips, plus teacher tools -->
+    <section id="home" hidden>
+      <h1>Field trips</h1>
+      <ul id="trip-list" class="trip-list"></ul>
+      <h2 id="past-heading" class="past-heading" hidden>Past trips</h2>
+      <ul id="past-list" class="trip-list past"></ul>
+
+      <section id="new-trip" class="card stack" hidden>
+        <h2>New trip</h2>
+        <form id="new-trip-form" class="grid-form">
+          <label class="wide">Trip name <input name="name" required maxlength="80" placeholder="Science Museum"></label>
+          <label>Date <input name="date" type="date"></label>
+          <button class="primary" type="submit">Create trip</button>
+        </form>
+        <p class="hint">The trip starts with one bus and seat selection closed, so you can set up
+          buses before students choose.</p>
+      </section>
+
+      <section id="teachers" class="card stack" hidden>
+        <h2>Teachers</h2>
+        <p class="hint">Teachers can create trips, set up buses, open and close seat selection, and
+          clear seats. Only you can add or remove teachers.</p>
+        <ul id="teacher-list" class="teacher-list"></ul>
+        <form id="add-teacher-form" class="inline-form">
+          <input name="email" type="email" required placeholder="teacher@zispp.org" aria-label="Teacher email">
+          <button type="submit">Add teacher</button>
+        </form>
+      </section>
+    </section>
+
+    <!-- One trip: seat map, plus teacher tools -->
+    <section id="trip-view" hidden>
+      <a id="back-link" class="back-link" href="./">← All trips</a>
       <div class="trip-header">
         <h1 id="trip-title"></h1>
         <p id="trip-date" class="muted"></p>
         <p id="trip-status" class="status"></p>
       </div>
 
-      <ul class="legend">
-        <li><span class="swatch available"></span>Available</li>
-        <li><span class="swatch taken"></span>Taken</li>
-        <li><span class="swatch mine"></span>Your seat</li>
-        <li><span class="swatch selected"></span>Selected</li>
-      </ul>
+      <div id="trip-body">
+        <div id="bus-tabs" class="bus-tabs" role="tablist" aria-label="Buses"></div>
 
-      <div class="bus">
-        <div class="bus-front">
-          <span class="driver">Driver</span>
-          <span class="door">Door</span>
+        <ul class="legend">
+          <li><span class="swatch available"></span>Available</li>
+          <li><span class="swatch taken"></span>Taken</li>
+          <li><span class="swatch mine"></span>Your seat</li>
+          <li><span class="swatch selected"></span>Selected</li>
+        </ul>
+
+        <div class="bus">
+          <div class="bus-front">
+            <span class="driver">Driver</span>
+            <span id="bus-name" class="bus-label"></span>
+            <span class="door">Door</span>
+          </div>
+          <div id="seat-map" class="seat-map"></div>
+          <div class="bus-back">Back of bus</div>
         </div>
-        <div id="seat-map" class="seat-map"></div>
-        <div class="bus-back">Back of bus</div>
       </div>
 
-      <section id="admin" class="card admin" hidden>
+      <section id="admin" class="card admin stack" hidden>
         <h2>Teacher tools</h2>
         <p id="seat-count" class="muted"></p>
         <div class="admin-actions">
@@ -69,20 +108,25 @@
 
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Seat</th><th>Student</th><th class="email-col">Email</th><th></th></tr></thead>
+            <thead><tr><th>Bus</th><th>Seat</th><th>Student</th><th class="email-col">Email</th><th></th></tr></thead>
             <tbody id="roster"></tbody>
           </table>
         </div>
 
+        <details id="bus-settings">
+          <summary>Buses</summary>
+          <div id="bus-list" class="bus-list"></div>
+          <button id="add-bus" type="button">+ Add bus</button>
+        </details>
+
         <details id="trip-settings">
           <summary>Trip settings</summary>
-          <form id="trip-form" class="trip-form">
-            <label>Trip name <input name="name" required></label>
+          <form id="trip-form" class="grid-form">
+            <label class="wide">Trip name <input name="name" required maxlength="80"></label>
             <label>Date <input name="date" type="date"></label>
-            <label>Rows <input name="rows" type="number" min="1" max="20" required></label>
-            <label>Seats per row <input name="seatsPerRow" type="number" min="2" max="6" required></label>
             <button class="primary" type="submit">Save trip</button>
           </form>
+          <button id="delete-trip" class="danger-button" type="button">Delete this trip</button>
         </details>
       </section>
     </section>

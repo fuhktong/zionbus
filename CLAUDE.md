@@ -30,16 +30,20 @@ similar to picking a seat when booking an airline flight.
 ## Data model (Firestore)
 
 ```
-trips/{tripId}
-  name, date, isOpen (bool), rows, seatsPerRow
+admins/{email}                         // teachers. The master admin has super: true (set by hand
+  super?, addedBy, addedAt             // in the console); the master admin adds/removes the rest in the app
 
-admins/{email}                         // teachers; added by hand in the Firebase console
+trips/{tripId}                         // tripId = slug + random suffix, e.g. "zoo-visit-x7k2"
+  name, date, isOpen (bool), createdBy, createdAt
 
-trips/{tripId}/seats/{seatId}          // seatId e.g. "5C"
-  studentEmail, studentName, takenAt
+trips/{tripId}/buses/{busId}
+  name, rows, seatsPerRow, order
 
-trips/{tripId}/students/{email}        // one doc per student = one seat per student
-  seatId
+trips/{tripId}/seats/{busId_seat}      // e.g. "aB3xY9_5C"; one doc per taken seat
+  busId, seat, studentEmail, studentName, takenAt
+
+trips/{tripId}/students/{email}        // one doc per student = one seat per student per trip
+  seatKey
 ```
 
 ## Key rules
@@ -49,8 +53,10 @@ trips/{tripId}/students/{email}        // one doc per student = one seat per stu
 - **Security rules**, enforced server-side in `firestore.rules`:
   - Only signed-in users whose email ends in the school domain can read or write.
   - A student can only write a seat doc with their own email, and only while `isOpen` is true.
-  - Only admins (listed in an `admins` collection) can create or edit trips or
+  - Only admins (listed in an `admins` collection) can create or edit trips and buses or
     override seats.
+  - Only the master admin (`super: true`) can add or remove admins, and no one can grant
+    `super` from the app.
 - Never trust the client. The security rules are what actually protect the data.
 
 ## Project conventions
@@ -64,10 +70,13 @@ trips/{tripId}/students/{email}        // one doc per student = one seat per stu
 
 ## Current status
 
-- **Draft** being built to present to a manager. The bus layout is a placeholder:
-  40 seats (10 rows × 4, aisle in the middle), which a teacher can change in Trip settings.
+- **Draft** being built to present to a manager. Live at https://fuhktong.github.io/zionbus/
+  (GitHub Pages) with Firebase project `zionbus-a56e3`.
+- Home page lists trips; teachers create trips there. Each trip has one or more buses; a new
+  bus defaults to 10 rows × 4 (aisle in the middle), editable per bus in Teacher tools → Buses.
 - School: Google Workspace, email domain **`@zispp.org`**.
-- **Demo mode**: while `firebaseConfig.apiKey` in `js/config.js` is empty, the app uses
+- **Demo mode**: while `firebaseConfig.apiKey` in `js/config.js` is empty, or when the URL has
+  `?demo`, the app uses
   `js/store-demo.js` (browser localStorage) instead of Firebase. Both stores export the same
   functions, and `js/app.js` never talks to Firebase directly.
 - Run locally with `python3 -m http.server` (ES modules don't load from `file://`).
@@ -77,4 +86,3 @@ trips/{tripId}/students/{email}        // one doc per student = one seat per stu
 - Real bus layout: seats per bus, rows, and whether there are back-row bench seats.
 - Should students see who is sitting in taken seats? Right now only teachers see names.
 - Should each trip use a pre-loaded roster of students?
-- Multiple buses per trip?

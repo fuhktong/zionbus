@@ -13,25 +13,25 @@ export const firebaseConfig = {
   measurementId: "G-LXT98DNXXG",
 };
 
-export const DEMO_MODE = !firebaseConfig.apiKey;
+const params = new URLSearchParams(location.search);
+
+// Add ?demo to the address to try the app with sample data saved only in this browser.
+export const DEMO_MODE = !firebaseConfig.apiKey || params.has("demo");
 
 // Only accounts from this Google Workspace domain can sign in.
 export const SCHOOL_DOMAIN = "zispp.org";
 
-// Which trip to show. Share a link like ?trip=museum-oct to use a different trip.
-export const TRIP_ID =
-  new URLSearchParams(location.search).get("trip") || "field-trip";
+// Which trip to show, from a link like ?trip=museum-oct-x7k2. Without it, the app
+// shows the list of trips.
+export const TRIP_ID = params.get("trip") || null;
 
-// Starting values for a new trip. The bus layout is a placeholder (10 rows × 4 = 40 seats)
-// and can be changed later in Teacher tools → Trip settings.
-export const DEFAULT_TRIP = {
-  name: "Field Trip",
-  date: "",
+// Layout for a new bus. A placeholder (10 rows × 4 = 40 seats) that teachers can change
+// per bus in Teacher tools → Buses.
+export const DEFAULT_BUS = {
   rows: 10,
   seatsPerRow: 4,
-  isOpen: true,
 };
 
-// Demo mode only: these emails get the teacher view. With Firebase, teachers are
-// listed in the Firestore "admins" collection instead (see README.md).
-export const DEMO_ADMINS = [`teacher@${SCHOOL_DOMAIN}`];
+// Demo mode only: this email is the master admin. With Firebase, the master admin is the
+// admins/{email} doc with super: true (see README.md).
+export const DEMO_SUPER_ADMIN = `teacher@${SCHOOL_DOMAIN}`;

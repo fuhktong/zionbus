@@ -13,9 +13,12 @@ python3 -m http.server 8000
 
 Open http://localhost:8000
 
+You can also add `?demo` to the live site's address to try demo mode there.
+
 - Sign in with any `@zispp.org` email, e.g. `ava.student@zispp.org`.
-- Sign in as `teacher@zispp.org` to see **Teacher tools**: open/close seat selection,
-  see who sits where, clear a seat, download a CSV, and change the bus layout.
+- Sign in as `teacher@zispp.org` (master admin) to create trips, set up buses, open/close seat
+  selection, see who sits where, clear a seat, download a CSV, and add or remove teachers.
+- `ms.lee@zispp.org` is a regular teacher: everything except managing teachers.
 - Open a second browser tab and sign in as a different student to see seats update live.
 - **Reset demo** in the yellow banner puts the sample seats back.
 
@@ -28,14 +31,16 @@ Open http://localhost:8000
    Then Settings → **Authorized domains** → add `<your-github-username>.github.io`.
 3. **Firestore Database** → Create database (production mode).
    Open the **Rules** tab, paste in `firestore.rules`, and Publish.
-4. In Firestore **Data**, create a collection `admins` and add one document per teacher.
-   The **Document ID** is the teacher's email (e.g. `ms.smith@zispp.org`). No fields needed.
+4. In Firestore **Data**, create a collection `admins` with one document for yourself, the
+   master admin. The **Document ID** is your school email in lowercase, with one field:
+   `super` (boolean) = `true`. You add every other teacher from the app's home page.
 5. Project settings → **Your apps** → add a Web app (`</>`). Copy the `firebaseConfig`
    values into `js/config.js`. Once `apiKey` is set, demo mode turns off.
-6. Sign in as a teacher, open **Trip settings**, and save to create the trip.
+6. Sign in, create a trip on the home page, set up its buses, then click
+   **Open seat selection**.
 
-Each trip has its own link: `https://…/zionbus/?trip=museum-oct`. Without `?trip=`,
-the app uses the trip `field-trip`.
+The home page lists every trip. Each trip also has its own link to share with students,
+like `https://…/zionbus/?trip=zoo-visit-x7k2`.
 
 ## Hosting on GitHub Pages
 
